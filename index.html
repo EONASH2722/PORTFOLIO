@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- SEO -->
 <meta name="description" content="Janmesh Meena - Backend Developer and Unity Engineer specializing in scalable systems, multiplayer logic, and C# development." />
 <meta name="keywords" content="Backend Developer, Unity Developer, C#, Multiplayer Systems, Junior Developer, Game Backend" />
 <meta name="author" content="Janmesh Meena" />
@@ -15,109 +14,359 @@
 
 <style>
 :root {
-  --bg:#0d0d0d; --card:#121212; --text:#00ffcc; --accent:#00ffff; --header:#1a1a1a;
-}
-body.light {
-  --bg:#f4f6f8; --card:#ffffff; --text:#222; --accent:#0055ff; --header:#eaeaea;
+  --bg: #0d0d0d;
+  --card: rgba(18, 18, 18, 0.84);
+  --text: #00ffcc;
+  --accent: #00ffff;
+  --header: rgba(26, 26, 26, 0.86);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --icon: #ffffff;
+  --icon-shadow: rgba(255, 255, 255, 0.55);
+  --bubble: rgba(255, 255, 255, 0.05);
 }
 
-* { box-sizing: border-box; }
+body.light {
+  --bg: #ffffff;
+  --card: rgba(255, 255, 255, 0.86);
+  --text: #222;
+  --accent: #0055ff;
+  --header: rgba(240, 240, 240, 0.88);
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --icon: #111111;
+  --icon-shadow: rgba(0, 0, 0, 0.28);
+  --bubble: rgba(0, 0, 0, 0.05);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100%;
+}
 
 body {
-  margin:0;
-  font-family:'Source Sans 3', 'Segoe UI', Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  transition:0.4s;
+  margin: 0;
+  font-family: 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.35s ease, color 0.35s ease;
+  position: relative;
+  overflow-x: hidden;
+  isolation: isolate;
+}
+
+/* Background layers */
+.spacetime-canvas,
+.spacetime-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#stars { z-index: 0; }
+#grid  { z-index: 1; }
+
+.spacetime-overlay {
+  z-index: 2;
+  background: radial-gradient(circle at center, rgba(0,0,0,0) 50%, rgba(0,0,0,0.35) 100%);
+  transition: background 0.35s ease;
+}
+
+body.light .spacetime-overlay {
+  background: radial-gradient(circle at center, rgba(255,255,255,0) 50%, rgba(255,255,255,0.18) 100%);
+}
+
+/* Content above background */
+header, main, footer {
+  position: relative;
+  z-index: 5;
 }
 
 header, footer {
-  background:var(--header);
-  padding:20px;
-  text-align:center;
+  background: var(--header);
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--panel-border);
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+
+footer {
+  border-top: 1px solid var(--panel-border);
+  border-bottom: none;
 }
 
 nav {
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:14px;
-  margin-top:15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 15px;
 }
 
 nav a {
-  color:var(--text);
-  text-decoration:none;
-  padding:8px 14px;
-  border-radius:6px;
+  color: var(--text);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: 0.25s ease;
 }
 
-.theme-toggle {
-  margin-top:15px;
-  padding:8px 16px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-family:inherit;
+nav a:hover {
+  border-color: var(--panel-border);
+  transform: translateY(-1px);
 }
 
 .content {
-  position:relative;
-  min-height:80vh;
-  padding-bottom:160px;
+  position: relative;
+  min-height: 80vh;
+  padding-bottom: 160px;
 }
 
 .page-section {
-  position:absolute;
-  left:0; right:0;
-  max-width:950px;
-  margin:30px auto;
-  padding:30px;
-  background:var(--card);
-  border-radius:14px;
-  opacity:0;
-  transform:translateX(60px);
-  pointer-events:none;
-  transition:0.6s;
+  position: absolute;
+  left: 0;
+  right: 0;
+  max-width: 950px;
+  margin: 30px auto;
+  padding: 30px;
+  background: var(--card);
+  border-radius: 14px;
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transform: translateX(60px);
+  pointer-events: none;
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease,
+    background 0.35s ease,
+    border-color 0.35s ease;
 }
 
 .page-section.active {
-  opacity:1;
-  transform:translateX(0);
-  pointer-events:auto;
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
 }
 
 .page-section.exit {
-  opacity:0;
-  transform:translateX(-60px);
+  opacity: 0;
+  transform: translateX(-60px);
 }
 
-h1,h2,h3 { color:var(--accent); }
+h2, h3 {
+  color: var(--accent);
+  transition: color 0.35s ease;
+}
+
+a {
+  color: var(--accent);
+}
 
 .next-page-btn {
-  margin-top:25px;
-  padding:12px 24px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-family:inherit;
+  margin-top: 25px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  background: var(--accent);
+  color: #000;
+  transition: 0.25s ease;
 }
 
-/* Mobile */
-@media (max-width:600px) {
-  body { font-size:11px; }
-  .page-section { padding:20px; margin:20px; }
+body.light .next-page-btn {
+  color: #fff;
+}
+
+.next-page-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* floating icon button */
+.theme-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 20;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--icon);
+  filter: drop-shadow(0 0 6px var(--icon-shadow));
+  transition: transform 0.2s ease, color 0.35s ease, filter 0.35s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.08);
+}
+
+.theme-toggle svg {
+  width: 38px;
+  height: 38px;
+  display: block;
+}
+
+.theme-toggle .stroke-only {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-toggle .moon-only {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: none;
+}
+
+/* Name hover bubble */
+.name-wrap {
+  display: inline-block;
+  position: relative;
+  padding: 0.18rem 0.45rem;
+  border-radius: 18px;
+  background: transparent;
+  transition:
+    transform 0.35s cubic-bezier(.2,.9,.2,1),
+    background 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+  border: 1px solid transparent;
+  transform-style: preserve-3d;
+  perspective: 900px;
+}
+
+.name-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -0.35rem -0.55rem;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s cubic-bezier(.2,.9,.2,1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.20);
+  z-index: -1;
+}
+
+body.light .name-wrap::before {
+  border: 1px solid rgba(0,0,0,0.10);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.10),
+    inset 0 1px 0 rgba(0,0,0,0.08);
+}
+
+.name-wrap:hover {
+  transform: translateY(-8px);
+}
+
+.name-wrap:hover::before {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.name-title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--accent);
+  opacity: 1;
+  transition:
+    transform 0.35s cubic-bezier(.2,.9,.2,1),
+    color 0.35s ease,
+    text-shadow 0.35s ease;
+  text-shadow: 0 0 0 transparent;
+}
+
+.name-wrap:hover .name-title {
+  transform: translateY(-3px);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+/* Make the bubble subtle but visible above the background */
+.name-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 600px) {
+  body {
+    font-size: 11px;
+  }
+
+  .page-section {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .theme-toggle {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .theme-toggle svg {
+    width: 32px;
+    height: 32px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>Janmesh Meena</h1>
-  <h2>Backend Developer - Unity Engineer - Systems Thinker</h2>
+<button class="theme-toggle" id="themeBtn" aria-label="Toggle theme" onclick="toggleTheme()">
+  <svg id="themeIcon" viewBox="0 0 24 24" aria-hidden="true">
+    <g id="sunIcon" class="stroke-only">
+      <circle cx="12" cy="12" r="4.2"></circle>
+      <line x1="12" y1="1.8" x2="12" y2="4.4"></line>
+      <line x1="12" y1="19.6" x2="12" y2="22.2"></line>
+      <line x1="1.8" y1="12" x2="4.4" y2="12"></line>
+      <line x1="19.6" y1="12" x2="22.2" y2="12"></line>
+      <line x1="4.8" y1="4.8" x2="6.7" y2="6.7"></line>
+      <line x1="17.3" y1="17.3" x2="19.2" y2="19.2"></line>
+      <line x1="4.8" y1="19.2" x2="6.7" y2="17.3"></line>
+      <line x1="17.3" y1="6.7" x2="19.2" y2="4.8"></line>
+    </g>
+    <path id="moonIcon" class="moon-only" d="M15.5 3.2c-1 .4-1.8 1.1-2.5 2-1.7 2.1-2 5.2-.6 7.8 1.4 2.6 4.2 4.1 7.1 3.7-1.2 1.7-3.1 3-5.4 3-4.2 0-7.6-3.4-7.6-7.6 0-3.7 2.7-6.9 6.3-7.5.9-.2 1.9-.1 2.7.1z"></path>
+  </svg>
+</button>
 
-  <button class="theme-toggle" onclick="toggleTheme()">Toggle Light / Dark</button>
+<header>
+  <div class="name-row">
+    <div class="name-wrap" id="nameBubble">
+      <h1 class="name-title">Janmesh Meena</h1>
+    </div>
+  </div>
+  <h2>Backend Developer - Unity Engineer - Systems Thinker</h2>
 
   <nav>
     <a href="#about">About</a>
@@ -130,78 +379,77 @@ h1,h2,h3 { color:var(--accent); }
 
 <main class="content">
 
-<section id="about" class="page-section">
-  <h2>Professional Summary</h2>
-  <p>
-    Backend-focused developer experienced in building scalable, maintainable systems
-    using C# and Unity. Strong at architecture, problem-solving, and long-term ownership.
-  </p>
-  <button class="next-page-btn" onclick="nextPage()">Next</button>
-</section>
+  <section id="about" class="page-section">
+    <h2>Professional Summary</h2>
+    <p>
+      Backend-focused developer experienced in building scalable, maintainable systems
+      using C# and Unity. Strong at architecture, problem-solving, and long-term ownership.
+    </p>
+    <button class="next-page-btn" onclick="nextPage()">Next</button>
+  </section>
 
-<section id="skills" class="page-section">
-  <h2>Skills</h2>
-  <p><strong>Languages:</strong> C#, HTML, CSS</p>
-  <p><strong>Engines:</strong> Unity</p>
-  <p><strong>Concepts:</strong> Backend Systems, Multiplayer Logic, State Management</p>
-  <p><strong>Tools:</strong> Git, Photon, Blender</p>
-  <button class="next-page-btn" onclick="nextPage()">Next</button>
-</section>
+  <section id="skills" class="page-section">
+    <h2>Skills</h2>
+    <p><strong>Languages:</strong> C#, HTML, CSS</p>
+    <p><strong>Engines:</strong> Unity</p>
+    <p><strong>Concepts:</strong> Backend Systems, Multiplayer Logic, State Management</p>
+    <p><strong>Tools:</strong> Git, Photon, Blender</p>
+    <button class="next-page-btn" onclick="nextPage()">Next</button>
+  </section>
 
-<section id="projects" class="page-section">
-  <h2>Projects</h2>
+  <section id="projects" class="page-section">
+    <h2>Projects</h2>
 
-  <h3>MORICE (Local AI Assistant)</h3>
-  <p>
-    Built a local AI assistant with a glass UI, offline GGUF support, and on-demand knowledge tools.
-    Focused on reliability, performance, and practical daily use.
-  </p>
+    <h3>MORICE (Local AI Assistant)</h3>
+    <p>
+      Built a local AI assistant with a glass UI, offline GGUF support, and on-demand knowledge tools.
+      Focused on reliability, performance, and practical daily use.
+    </p>
 
-  <h3>KeyDrop (Private File Sharing)</h3>
-  <p>
-    Built a secure, code-based file sharing web app for private delivery, large uploads,
-    and time or download-limited access. Uses chunked uploads with resume, encrypted storage,
-    hashed access codes, and strict server-side validation for secure downloads.
-  </p>
+    <h3>KeyDrop (Private File Sharing)</h3>
+    <p>
+      Built a secure, code-based file sharing web app for private delivery, large uploads,
+      and time or download-limited access. Uses chunked uploads with resume, encrypted storage,
+      hashed access codes, and strict server-side validation for secure downloads.
+    </p>
 
-  <p><a href="https://github.com/EONASH2722" target="_blank">GitHub Profile</a></p>
-  <button class="next-page-btn" onclick="nextPage()">Next</button>
-</section>
+    <p><a href="https://github.com/EONASH2722" target="_blank" rel="noreferrer">GitHub Profile</a></p>
+    <button class="next-page-btn" onclick="nextPage()">Next</button>
+  </section>
 
-<!-- ATS RESUME -->
-<section id="resume" class="page-section">
-  <h2>ATS-Optimized Resume</h2>
-  <p><strong>Janmesh Meena</strong></p>
-  <p>Backend Developer | Unity Engineer</p>
-  <p>Email: janmeshmeena10@gmail.com</p>
-  <p>GitHub: github.com/EONASH2722</p>
+  <section id="resume" class="page-section">
+    <h2>ATS-Optimized Resume</h2>
+    <p><strong>Janmesh Meena</strong></p>
+    <p>Backend Developer | Unity Engineer</p>
+    <p>Email: janmeshmeena10@gmail.com</p>
+    <p>GitHub: github.com/EONASH2722</p>
 
-  <h3>Summary</h3>
-  <p>
-    Backend-oriented developer with strong experience in C# and Unity.
-    Skilled in system design, multiplayer logic, and performance-focused development.
-  </p>
+    <h3>Summary</h3>
+    <p>
+      Backend-oriented developer with strong experience in C# and Unity.
+      Skilled in system design, multiplayer logic, and performance-focused development.
+    </p>
 
-  <h3>Skills</h3>
-  <p>C#, Unity, Backend Architecture, Multiplayer Systems, Git</p>
+    <h3>Skills</h3>
+    <p>C#, Unity, Backend Architecture, Multiplayer Systems, Git</p>
 
-  <h3>Projects</h3>
-  <p>
-    Large-scale multiplayer game developed independently.
-    Responsible for architecture, networking logic, and gameplay systems.
-  </p>
+    <h3>Projects</h3>
+    <p>
+      Large-scale multiplayer game developed independently.
+      Responsible for architecture, networking logic, and gameplay systems.
+    </p>
 
-  <button class="next-page-btn" onclick="nextPage()">Next</button>
-</section>
+    <button class="next-page-btn" onclick="nextPage()">Next</button>
+  </section>
 
-<section id="contact" class="page-section">
-  <h2>Contact</h2>
-  <p>Email: janmeshmeena10@gmail.com</p>
-  <p>Phone: +91 8828328565</p>
-  <p>GitHub: EONASH2722</p>
-  <p>Instagram: girik2723</p>
-  <button class="next-page-btn" onclick="nextPage()">Back to Start</button>
-</section>
+  <section id="contact" class="page-section">
+    <h2>Contact</h2>
+    <p>Email: janmeshmeena10@gmail.com</p>
+    <p>Phone: +91 8828328565</p>
+    <p>GitHub: EONASH2722</p>
+    <p>Instagram: girik2723</p>
+    <button class="next-page-btn" onclick="nextPage()">Back to Start</button>
+  </section>
 
 </main>
 
@@ -210,33 +458,240 @@ h1,h2,h3 { color:var(--accent); }
 </footer>
 
 <script>
-const sections=[...document.querySelectorAll(".page-section")];
-const links=document.querySelectorAll("nav a");
-let current=null;
+const sections = [...document.querySelectorAll(".page-section")];
+const links = document.querySelectorAll("nav a");
+let current = null;
 
-function activate(id){
-  if(current){current.classList.remove("active");current.classList.add("exit");}
-  const n=document.getElementById(id);
-  n.classList.remove("exit");
-  n.classList.add("active");
-  current=n;
+function activate(id) {
+  if (current) {
+    current.classList.remove("active");
+    current.classList.add("exit");
+  }
+  const next = document.getElementById(id);
+  next.classList.remove("exit");
+  next.classList.add("active");
+  current = next;
 }
-function nextPage(){
-  const i=sections.indexOf(current);
-  activate(sections[(i+1)%sections.length].id);
+
+function nextPage() {
+  const i = sections.indexOf(current);
+  activate(sections[(i + 1) % sections.length].id);
 }
-links.forEach(l=>l.onclick=e=>{
-  e.preventDefault();
-  activate(l.getAttribute("href").substring(1));
+
+links.forEach(link => {
+  link.onclick = (e) => {
+    e.preventDefault();
+    activate(link.getAttribute("href").substring(1));
+  };
 });
 
-function toggleTheme(){
-  document.body.classList.toggle("light");
-  localStorage.setItem("theme",document.body.classList.contains("light")?"light":"dark");
-}
-if(localStorage.getItem("theme")==="light") document.body.classList.add("light");
+function updateThemeIcon() {
+  const sunIcon = document.getElementById("sunIcon");
+  const moonIcon = document.getElementById("moonIcon");
+  const lightMode = document.body.classList.contains("light");
 
-activate(location.hash.replace("#","")||"about");
+  sunIcon.style.display = lightMode ? "none" : "block";
+  moonIcon.style.display = lightMode ? "block" : "none";
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("light") ? "light" : "dark"
+  );
+  updateThemeIcon();
+  updateBackgroundTheme();
+}
+
+/* Background */
+(() => {
+  const starsCanvas = document.createElement("canvas");
+  const gridCanvas = document.createElement("canvas");
+  const overlay = document.createElement("div");
+
+  starsCanvas.id = "stars";
+  gridCanvas.id = "grid";
+  starsCanvas.className = "spacetime-canvas";
+  gridCanvas.className = "spacetime-canvas";
+  overlay.className = "spacetime-overlay";
+
+  starsCanvas.setAttribute("aria-hidden", "true");
+  gridCanvas.setAttribute("aria-hidden", "true");
+  overlay.setAttribute("aria-hidden", "true");
+
+  document.body.prepend(overlay);
+  document.body.prepend(gridCanvas);
+  document.body.prepend(starsCanvas);
+
+  const starsCtx = starsCanvas.getContext("2d");
+  const gridCtx = gridCanvas.getContext("2d");
+
+  const stars = [];
+  const spacing = 42;
+
+  let w = 0;
+  let h = 0;
+  let tx = 0;
+  let ty = 0;
+  let sx = 0;
+  let sy = 0;
+
+  let starColor = "#ffffff";
+  let gridColor = "rgba(220,220,220,0.30)";
+
+  function buildStar(width, height) {
+    return {
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: Math.random() * 1.2 + 0.3,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() * 0.12 + 0.02)
+    };
+  }
+
+  function updateBackgroundTheme() {
+    const light = document.body.classList.contains("light");
+    starColor = light ? "#000000" : "#ffffff";
+    gridColor = light ? "rgba(0,0,0,0.28)" : "rgba(220,220,220,0.30)";
+    drawStars();
+    drawGrid();
+  }
+
+  function resize() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    starsCanvas.width = Math.round(w * dpr);
+    starsCanvas.height = Math.round(h * dpr);
+    gridCanvas.width = Math.round(w * dpr);
+    gridCanvas.height = Math.round(h * dpr);
+
+    starsCanvas.style.width = w + "px";
+    starsCanvas.style.height = h + "px";
+    gridCanvas.style.width = w + "px";
+    gridCanvas.style.height = h + "px";
+
+    starsCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    stars.length = 0;
+    const count = Math.max(140, Math.min(280, Math.round((w * h) / 4500)));
+    for (let i = 0; i < count; i++) {
+      stars.push(buildStar(w, h));
+    }
+
+    tx = w / 2;
+    ty = h / 2;
+    sx = tx;
+    sy = ty;
+
+    updateBackgroundTheme();
+  }
+
+  function drawStars() {
+    starsCtx.clearRect(0, 0, w, h);
+    starsCtx.fillStyle = starColor;
+
+    for (const s of stars) {
+      s.x += s.vx;
+      s.y += s.vy;
+
+      if (s.y > h) {
+        s.y = -5;
+        s.x = Math.random() * w;
+      }
+
+      if (s.x > w) s.x = 0;
+      if (s.x < 0) s.x = w;
+
+      starsCtx.beginPath();
+      starsCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      starsCtx.fill();
+    }
+  }
+
+  function drawGrid() {
+    gridCtx.clearRect(0, 0, w, h);
+    gridCtx.strokeStyle = gridColor;
+    gridCtx.lineWidth = 1;
+
+    for (let y = 0; y < h; y += spacing) {
+      gridCtx.beginPath();
+      for (let x = 0; x < w; x += spacing) {
+        const dx = x - sx;
+        const dy = y - sy;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const offset = Math.max(0, 160 - distance) * 0.25;
+        const ny = y - offset;
+
+        if (x === 0) gridCtx.moveTo(x, ny);
+        else gridCtx.lineTo(x, ny);
+      }
+      gridCtx.stroke();
+    }
+
+    for (let x = 0; x < w; x += spacing) {
+      gridCtx.beginPath();
+      for (let y = 0; y < h; y += spacing) {
+        const dx = x - sx;
+        const dy = y - sy;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const offset = Math.max(0, 160 - distance) * 0.25;
+        const ny = y - offset;
+
+        if (y === 0) gridCtx.moveTo(x, ny);
+        else gridCtx.lineTo(x, ny);
+      }
+      gridCtx.stroke();
+    }
+  }
+
+  function animate() {
+    sx += (tx - sx) * 0.07;
+    sy += (ty - sy) * 0.07;
+    drawStars();
+    drawGrid();
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener("mousemove", (e) => {
+    tx = e.clientX;
+    ty = e.clientY;
+  });
+
+  window.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    if (t) {
+      tx = t.clientX;
+      ty = t.clientY;
+    }
+  }, { passive: true });
+
+  window.addEventListener("touchmove", (e) => {
+    const t = e.touches[0];
+    if (t) {
+      tx = t.clientX;
+      ty = t.clientY;
+    }
+  }, { passive: true });
+
+  window.addEventListener("resize", resize);
+
+  resize();
+  animate();
+
+  window.updateBackgroundTheme = updateBackgroundTheme;
+})();
+
+if (localStorage.getItem("theme") === "light") {
+  document.body.classList.add("light");
+}
+
+updateThemeIcon();
+activate(location.hash.replace("#", "") || "about");
 </script>
 
 </body>
